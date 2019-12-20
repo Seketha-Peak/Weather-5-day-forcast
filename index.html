@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Weather Test</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<style>
+		h1 {
+			text-align: center;
+		}
+
+		p {
+			text-align: center;
+		}
+		img {
+			display:block;
+        	margin-left: auto;
+        	margin-right: auto;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#home">Current Weather</a></li>
+			<li><a data-toggle="tab" href="#fiveday">5 Day Report</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="home" class="tab-pane fade in active">
+				<div class="row">
+					<div class="col-sm-1"> </div>
+					<div class="col-sm-10">
+						<h1 id="city">Weather Test</h1>
+					</div>
+					<div class="col-sm-1"> </div>
+				</div>
+				<div class="row">
+					<div class="col-sm-1"> </div>
+					<div class="col-sm-10">
+						<img id="image" />
+						<p id="temp"></p>
+						<p id="humidity"></p>
+						<p id="pressure"></p>
+						<p id="weather"></p>
+						<p id="decription"></p>
+						<p id="wind"></p>
+					</div>
+				</div>
+				<div class="row">
+					<div id="output" class="col-sm-12">Loading weather forcast, please wait... </div>
+				</div>
+				<div class="row>">
+					<div class="col-sm-1"> </div>
+					<div class="col-sm-10">
+						Enter ZIP 
+						<input id="zip" type="text" placeholder="Enter ZIP here">
+						<input type="button" onClick="getWeather()" value="submit">
+					</div>
+					<div class="col-sm-1"> </div>
+				</div>
+			</div>
+			<div id="fiveday" class="tab-pane fade">
+				<div class="row">
+					<div class="col-sm-1"> </div>
+					<div class="col-sm-2">
+						<p>day 1</p>
+						<img id="image1" />
+						<p id="temp1"></p>
+						<p id="humidity1"></p>
+						<p id="pressure1"></p>
+						<p id="weather1"></p>
+						<p id="decription1"></p>
+						<p id="wind1"></p>
+					</div>
+					<div class="col-sm-2">
+							<p>day 2</p>
+							<img id="image2" />
+						<p id="temp2"></p>
+						<p id="humidity2"></p>
+						<p id="pressure2"></p>
+						<p id="weather2"></p>
+						<p id="decription2"></p>
+						<p id="wind2"></p>
+					</div>
+					<div class="col-sm-2">
+							<p>day 3</p>
+							<img id="image3" />
+						<p id="temp3"></p>
+						<p id="humidity3"></p>
+						<p id="pressure3"></p>
+						<p id="weather3"></p>
+						<p id="decription3"></p>
+						<p id="wind3"></p>
+					</div>
+					<div class="col-sm-2">
+							<p>day 4</p>
+							<img id="image4" />
+						<p id="temp4"></p>
+						<p id="humidity4"></p>
+						<p id="pressure4"></p>
+						<p id="weather4"></p>
+						<p id="decription4"></p>
+						<p id="wind4"></p>
+					</div>
+					<div class="col-sm-2">
+							<p>day 5</p>
+
+						<img id="image5" />
+						<p id="temp5"></p>
+						<p id="humidity5"></p>
+						<p id="pressure5"></p>
+						<p id="weather5"></p>
+						<p id="decription5"></p>
+						<p id="wind5"></p>
+					</div>
+					<div class="col-sm-1"> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+			<script>
+				$(document).ready(function () {
+					console.log("ready!");
+					var html = $("#output").html();
+					$("#output").html("getting weather...");
+					getWeather();
+					getWeather5Day();
+				});
+
+				function getWeather() {
+					// get what in the zip text box
+					// remember jQuery you can't use text for input fields
+					// must use val
+					var zip = $("#zip").val();
+					console.log(zip);
+					console.log(zip.length)
+					if(zip.length != 5){
+						// if not a valid zip, use default of school
+						zip = "19130"
+					}
+					var url = "http://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&units=imperial&APPID=909452a351cfc6ac3a0212864a3bcce5";
+					var settings2 = {
+						"async": true,
+						"crossDomain": true,
+						"url": url,
+						"method": "GET",
+						"headers": {}
+					}
+
+					$.ajax(settings2).done(function (response) {
+						console.log(response);
+						$("#output").html("");
+						var city = response.name;
+						console.log(city);
+						$("#city").text(city);
+						//$("#city").text(response.name);
+						$("#temp").text(response.main.temp + " F");
+						$("#humidity").text(response.main.humidity + " %");
+						$("#weather").text(response.weather[0].main);
+						$("#decription").text(response.weather[0].description);
+						//read api doc's on how image works
+						var icon = response.weather[0].icon;
+						$("#image").attr("src","http://openweathermap.org/img/w/" + icon + ".png");
+						/*
+						Cardinal Direction	Degree Direction
+								N    		348.75 - 11.25
+								NNE   		 11.25 - 33.75
+								NE    		 33.75 - 56.25
+								ENE   		 56.25 - 78.75
+								E     		 78.75 - 101.25
+								ESE  		101.25 - 123.75
+								SE   		123.75 - 146.25
+								SSE  		146.25 - 168.75
+								S    		168.75 - 191.25
+								SSW  		191.25 - 213.75
+								SW   		213.75 - 236.25
+								WSW  		236.25 - 258.75
+								W    		258.75 - 281.25
+								WNW  		281.25 - 303.75
+								NW   		303.75 - 326.25
+								NNW  		326.25 - 348.75
+						*/
+						var windspeed = response.wind.speed;
+						var winddir = response.wind.deg;
+						var winddirname;
+						if(winddir <  11.25){winddirname = "N"} else
+						if(winddir <  33.75){winddirname = "NNE"} else
+						if(winddir <  56.25){winddirname = "NE"} else
+						if(winddir <  78.75){winddirname = "ENE"} else
+						if(winddir < 101.25){winddirname = "E"} else
+						if(winddir < 123.75){winddirname = "ESE"} else
+						if(winddir < 146.25){winddirname = "SE"} else
+						if(winddir < 168.75){winddirname = "SSE"} else
+						if(winddir < 191.25){winddirname = "S"} else
+						if(winddir < 213.75){winddirname = "SSW"} else
+						if(winddir < 236.25){winddirname = "SW"} else
+						if(winddir < 258.75){winddirname = "WSW"} else
+						if(winddir < 281.25){winddirname = "W"} else
+						if(winddir < 303.75){winddirname = "WNW"} else
+						if(winddir < 348.75){winddirname = "NNW"} else
+						{ winddirname = "N"}
+
+						$("#wind").text("Winds are " + winddirname + " at " + windspeed + " MPH" );
+
+						const hPaTOinchofmercury = 0.02953
+						var hPa = response.main.pressure;
+						$("#pressure").text("barometer is at " + (hPa * hPaTOinchofmercury).toFixed(2));
+					})
+				}
+
+				function getWeather5Day() {
+					// get what in the zip text box
+					// remember jQuery you can't use text for input fields
+					// must use val
+					var zip = $("#zip").val();
+					console.log(zip);
+					console.log(zip.length)
+					if(zip.length != 5){
+						// if not a valid zip, use default of school
+						zip = "19130"
+					}
+					var url = "http://api.openweathermap.org/data/2.5/forecast?zip=" + zip + ",us&units=imperial&APPID=909452a351cfc6ac3a0212864a3bcce5";
+					var settings3 = {
+						"async": true,
+						"crossDomain": true,
+						"url": url,
+						"method": "GET",
+						"headers": {}
+					}
+
+					$.ajax(settings3).done(function (response) {
+						console.log(response);
+						$("#output").html("");
+						var city = response.city.name;
+						console.log(city);
+						for(var i=1;i<=5;i++){
+							var offset=3 + (8 * (i - 1 ));
+						//$("#city" + i).text(city);
+						//$("#city").text(response.name);
+						$("#temp" + i).text(response.list[offset].main.temp + " F");
+						$("#humidity" + i).text(response.list[offset].main.humidity + " %");
+						$("#weather" + i).text(response.list[offset].weather[0].main);
+						$("#decription" + i).text(response.list[offset].weather[0].description);
+						//read api doc's on how image works
+						var icon = response.list[offset].weather[0].icon;
+						$("#image" + i).attr("src","http://openweathermap.org/img/w/" + icon + ".png");
+						/*
+						Cardinal Direction	Degree Direction
+								N    		348.75 - 11.25
+								NNE   		 11.25 - 33.75
+								NE    		 33.75 - 56.25
+								ENE   		 56.25 - 78.75
+								E     		 78.75 - 101.25
+								ESE  		101.25 - 123.75
+								SE   		123.75 - 146.25
+								SSE  		146.25 - 168.75
+								S    		168.75 - 191.25
+								SSW  		191.25 - 213.75
+								SW   		213.75 - 236.25
+								WSW  		236.25 - 258.75
+								W    		258.75 - 281.25
+								WNW  		281.25 - 303.75
+								NW   		303.75 - 326.25
+								NNW  		326.25 - 348.75
+						*/
+						var windspeed = response.list[offset].wind.speed;
+						var winddir = response.list[offset].wind.deg;
+						var winddirname;
+						if(winddir <  11.25){winddirname = "N"} else
+						if(winddir <  33.75){winddirname = "NNE"} else
+						if(winddir <  56.25){winddirname = "NE"} else
+						if(winddir <  78.75){winddirname = "ENE"} else
+						if(winddir < 101.25){winddirname = "E"} else
+						if(winddir < 123.75){winddirname = "ESE"} else
+						if(winddir < 146.25){winddirname = "SE"} else
+						if(winddir < 168.75){winddirname = "SSE"} else
+						if(winddir < 191.25){winddirname = "S"} else
+						if(winddir < 213.75){winddirname = "SSW"} else
+						if(winddir < 236.25){winddirname = "SW"} else
+						if(winddir < 258.75){winddirname = "WSW"} else
+						if(winddir < 281.25){winddirname = "W"} else
+						if(winddir < 303.75){winddirname = "WNW"} else
+						if(winddir < 348.75){winddirname = "NNW"} else
+						{ winddirname = "N"}
+
+						$("#wind" + i).text("Winds are " + winddirname + " at " + windspeed + " MPH" );
+
+						const hPaTOinchofmercury = 0.02953
+						var hPa = response.list[offset].main.pressure;
+						$("#pressure" + i).text("barometer is at " + (hPa * hPaTOinchofmercury).toFixed(2));
+						}
+					})
+				}
+
+						</script>
+</body>
+
+</html>
